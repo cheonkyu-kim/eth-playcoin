@@ -41,14 +41,18 @@ export default {
     }
   },
   mounted() {
-    this.$watch('chartData', (newVal, oldVal) => {
+    this.$watch('chartData', async (newVal, oldVal) => {
       this.updateGradients(newVal);
+      this.renderChart(
+        this.chartData,
+        this.extraOptions
+      );
       if (!oldVal) {
         this.renderChart(
           this.chartData,
           this.extraOptions
         );
       }
-    }, { immediate: true });
+    }, { immediate: true, deep: true });
   }
 };

@@ -52,11 +52,10 @@
       ...mapActions('contract', [
         'submitTransfer'
       ]),
-      submit() {
-        console.log('clicked')
-        console.log(this.model)
+      async submit() {
         const { address, amount } = this.model
-        this.submitTransfer({ address, amount })
+        await this.submitTransfer({ address, amount })
+        alert(`${address}, 송금이 완료되었습니다.`)
       }
     }
   }

@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-lg-4" :class="{'text-right': isRTL}">
+      <div class="col-lg-6" :class="{'text-right': isRTL}">
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">트랜젝션 실행 수</h5>
@@ -40,7 +40,7 @@
           </div>
         </card>
       </div>
-      <div class="col-lg-4" :class="{'text-right': isRTL}">
+      <div class="col-lg-6" :class="{'text-right': isRTL}">
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">계정별 보유 토큰 수</h5>
@@ -56,7 +56,7 @@
           </div>
         </card>
       </div>
-      <div class="col-lg-4" :class="{'text-right': isRTL}">
+      <!-- <div class="col-lg-4" :class="{'text-right': isRTL}">
         <card type="chart">
           <template slot="header">
             <h5 class="card-category">{{$t('dashboard.completedTasks')}}</h5>
@@ -71,7 +71,7 @@
             </line-chart>
           </div>
         </card>
-      </div>
+      </div> -->
     </div>
     <div class="row">
       <div class="col-lg-6 col-md-12">
@@ -163,7 +163,7 @@
             }, // scales 끝
          },
           chartData: {
-            labels: ['JU111 L', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+            labels: ['JU111 L', 'AUG', 'SEP', 'OCT', 'NOV'],
             datasets: [{
               label: "Data",
               fill: true,
@@ -178,7 +178,7 @@
               pointHoverRadius: 4,
               pointHoverBorderWidth: 15,
               pointRadius: 4,
-              data: [0, 0, 0, 0, 0, 0],
+              data: [0, 0, 0, 0, 0],
               // data: [80, 100, 70, 80, 120, 80],
             }]
           },
@@ -212,16 +212,16 @@
         blueBarChart: {
           extraOptions: chartConfigs.barChartOptions,
           chartData: {
-            labels: ['계정1', '계정2', '계정3', '계정4', '계정5', '계정6'],
+            labels: ['계정0', '계정1', '계정2', '계정3', '계정4', '계정5',  '계정6',  '계정7', '계정8', '계정9'],
             // labels: ['USA', 'GER', 'AUS', 'UK', 'RO', 'BR'],
             datasets: [{
-              label: "Countries",
+              label: "balance",
               fill: true,
               borderColor: config.colors.info,
               borderWidth: 2,
               borderDash: [],
               borderDashOffset: 0.0,
-              data: [53, 20, 10, 80, 100, 45],
+              data: this.balances
             }]
           },
           gradientColors: config.colors.primaryGradient,
@@ -241,6 +241,7 @@
       ]),
       ...mapGetters('contract',[
         'totalSupply',
+        'balances'
       ]),
       enableRTL() {
         return this.$route.query.enableRTL;
@@ -269,11 +270,17 @@
           ...this.purpleLineChart,
           labels: labels
         }
+      },
+      balances(lists) {
+        this.blueBarChart.chartData.datasets[0].data = lists
+        this.blueBarChart = {
+          ...this.blueBarChart,
+        }
       }
     },
     methods: {
       ...mapActions('web3', ['init']),
-      ...mapActions('contract', ['fetchTotalSupply']),
+      ...mapActions('contract', ['fetchTotalSupply', 'fetchAllBalances']),
       initBigChart(index) {
         let chartData = {
           datasets: [{
@@ -299,8 +306,9 @@
       }
     },
     async mounted() {
-      this.init()
-      this.fetchTotalSupply()
+      await this.init()
+      await this.fetchTotalSupply()
+      await this.fetchAllBalances()
       this.i18n = this.$i18n;
       if (this.enableRTL) {
         this.i18n.locale = 'ar';

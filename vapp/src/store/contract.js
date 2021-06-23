@@ -5,6 +5,7 @@ const state = {
     contract: null,
     totalSupply: 0,
     balance: 0,
+    balances: []
     // TutorialToken.abi
 }
 
@@ -17,6 +18,9 @@ const getters = {
     },
     balance(state) {
         return state.balance;
+    },
+    balances(state) {
+        return state.balances;
     }
 }
 
@@ -32,6 +36,9 @@ const mutations = {
     },
     balance(state, balance) {
         state.balance = balance;
+    },
+    balances(state, balances) {
+        state.balances = balances;
     }
 }
 
@@ -41,7 +48,7 @@ const actions = {
         const networkId = await web3.eth.net.getId()
         const address = rootGetters.currentAccount
         // const contract = new web3.eth.Contract(TutorialToken.abi, address)
-        const contract = new web3.eth.Contract(TutorialToken.abi, '0x6CdDA6BB31e47b224386e8Cc5bEE506B8C0b65A4')
+        const contract = new web3.eth.Contract(TutorialToken.abi, '0xfDf1634ebDdef7607b6251474bd49028004a238a')
         contract.defaultAccount = address
         commit('contract', contract)
         const total = await contract.methods.totalSupply().call()
@@ -68,6 +75,16 @@ const actions = {
         } catch(e) {
             console.error(e)
         }
+    },
+    async fetchAllBalances({ state, commit, rootGetters }) {
+        const contract = state.contract
+        const accounts = rootGetters['web3/accounts']
+        
+        const balances = await Promise.all(accounts.map((account, idx)=>{
+            const { address } = account
+            return contract.methods.balanceOf(address).call()
+        }))
+        commit('balances', balances)
     }
 }
 
