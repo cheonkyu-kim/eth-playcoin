@@ -2,10 +2,10 @@
 FROM node:lts-alpine as build-stage
 WORKDIR /app
 COPY ./vapp/package*.json ./
-RUN npm install -g @vue/cli
-RUN npm install --production
+RUN yarn global add @vue/cli
+RUN yarn install
 COPY ./vapp .
-RUN npm run build
+RUN yarn build
 
 # production stage
 FROM nginx:stable-alpine as production-stage
