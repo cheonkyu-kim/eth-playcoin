@@ -2,6 +2,7 @@
 FROM node:lts-alpine as build-stage
 WORKDIR /app
 COPY ./vapp/package*.json ./
+RUN npm install -g @vue/cli
 RUN npm install --production
 COPY ./vapp .
 RUN npm run build
